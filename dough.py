@@ -1,11 +1,14 @@
 import random
 import math
 from fractions import Fraction
+from functools import reduce
 
 MAX_PREMIUM = 3
 MAX_FREE = 4
 
 MOD_CHANCE = 2
+
+# Helper functions for generatePizza
 
 def fileToList (filename):
     """
@@ -14,10 +17,27 @@ def fileToList (filename):
     return list (filter (None, (line.rstrip() for line in open(filename))))
 
 def randomPairSet (optionPair, size):
+    """
+    Return a list of tuples length of the size param. The tuples represent
+    (MODIFIER, TOPPING) pairs. There can be no duplicate topping component 
+    in the tuple list, but there can be duplicate modifiers. The modifier
+    component is optional.
+    """
+
     return list (map (
-        lambda x: ('', x) if random.randint(0, 2) else (random.choice(optionPair[1]), x), set (
+        lambda x: ('', x) if random.randint(0, MOD_CHANCE) else (
+            random.choice(optionPair[1]), x), set (
             map (lambda _: random.choice(optionPair[0]), [None] * size))))
 
+def listToSentance (lst):
+    """
+    Return the (MODIFIER, INGREDIENT) tuples folded into a 
+    comma-deliniated string.
+    """
+
+    return str(reduce (lambda x, y: "{}, {}".format(x, y), map(
+        lambda x: "{} {}".format(x[0], x[1]) if x[0] else x[1], lst)))
+    
 def generatePizza (premiumPair, freePair, seed):
     """
     premiumPair: tuple that represents a list of premium
@@ -31,36 +51,10 @@ def generatePizza (premiumPair, freePair, seed):
 
     random.seed()
 
-    # TODO: study the statistics of throwing out repeated vs 1 / 3
-    # add verify stats & script for alphabetizing txt files
-
-#    [None] * random.randint(1, MAX_PREMIUM)
-    
-    # premium
-    """
-    for _ in range (0, random.randint (1, MAX_PREMIUM)):
-        ingredient = random.choice (premiumPair[0])
-        if (('', ingredient) not in pizza[0]):
-            pizza[0].append (('',ingredient))       
-    """
-
-    
     pizza = (randomPairSet(
         premiumPair, random.randint(1, MAX_PREMIUM)), randomPairSet(
             freePair, random.randint(1, MAX_FREE)))
-
     
-    """
-    # free
-    for _ in range (0, random.randint (1, MAX_FREE)):
-        ingredient = random.choice (freePair[0])
-        if (('', ingredient) not in pizza[1]):
-            pizza[1].append (('', ingredient))
-
-    for i, ingredient in enumerate(pizza[1]):
-        if (not random.randint(0, 2)):
-            pizza[1][i] = (random.choice(freePair[1]), ingredient[1])
-       """     
     return pizza
 
 
@@ -73,21 +67,12 @@ def main ():
 
     pizza = generatePizza ((premiumList,premiumModList), (freeList,freeModList), 101212)
 
-    # use a FOLD
-    print (pizza)
-    """
-    pizzaString = ""
-    if 2 == len(pizza[0][0]):
-        pizzaString = " and ".join(pizza[0][0])
+    pizzaString = "One {} pizza with {}".format(
+        listToSentance(pizza[0]), listToSentance(pizza[1]))
+    
+    print (pizzaString)
 
-    elif len(pizza[0][0]) > 2:
-        pizzaString = ", ".join(pizza[0][0])
-        lIndex = pizzaString.rfind(',') + 1
-        pizzaString = pizzaString[:lIndex] + " and" + pizzaString[lIndex:]
-
-    else:
-        pizzaString = pizza[0]
-    """
+    
 main()
 
     
