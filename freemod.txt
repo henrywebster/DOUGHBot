@@ -1,5 +1,4 @@
+double
 extra
 light
-double
 triple
-

@@ -1,5 +1,7 @@
-
 extra
 heavy
 light
+low-fat
+soy
 super-size
+vegan

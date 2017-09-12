@@ -1,5 +1,4 @@
 import random
-import math
 from fractions import Fraction
 from functools import reduce
 
@@ -16,7 +15,7 @@ def fileToList (filename):
     """
     return list (filter (None, (line.rstrip() for line in open(filename))))
 
-def randomPairSet (optionPair, size):
+def generatePairList (optionPair, size):
     """
     Return a list of tuples length of the size param. The tuples represent
     (MODIFIER, TOPPING) pairs. There can be no duplicate topping component 
@@ -31,8 +30,10 @@ def randomPairSet (optionPair, size):
 
 def listToSentance (lst):
     """
-    Return the (MODIFIER, INGREDIENT) tuples folded into a 
+    Return the (MODIFIER, INGREDIENT) tuple list folded into a 
     comma-deliniated string.
+
+    [('extra', 'tofu'), ('', 'ham') => 'extra tofu, ham'
     """
 
     return str(reduce (lambda x, y: "{}, {}".format(x, y), map(
@@ -51,8 +52,8 @@ def generatePizza (premiumPair, freePair, seed):
 
     random.seed()
 
-    pizza = (randomPairSet(
-        premiumPair, random.randint(1, MAX_PREMIUM)), randomPairSet(
+    pizza = (generatePairList(
+        premiumPair, random.randint(1, MAX_PREMIUM)), generatePairList(
             freePair, random.randint(1, MAX_FREE)))
     
     return pizza

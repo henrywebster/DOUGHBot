@@ -9,6 +9,7 @@ lists=(premium.txt premiummod.txt free.txt freemod.txt)
 
 for list in "${lists[@]}"
 do
+    sed -i '/^[[:space:]]*$/d' $list
     sort $list -o $list
 done
     
