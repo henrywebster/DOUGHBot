@@ -23,7 +23,7 @@ import dough
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-LOOP_TIMEOUT = 20
+LOOP_TIMEOUT = 60
 
 def convertTextToData(text):
 	"""
@@ -69,7 +69,6 @@ def main():
 			# convert the text component to a seed for the RNG
 			seed = convertTextToData(message.text)
 
-			print(seed)
 			# Use the DOUGH system on input data to get a pizza back. Yum.
 			pizza = dough.generatePizza(seed)
 			
