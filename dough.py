@@ -60,7 +60,7 @@ def listToSentance (lst):
     return str(reduce (lambda x, y: "{}, {}".format(x, y), map(
         lambda x: "{} {}".format(x[0], x[1]) if x[0] else x[1], lst)))
     
-def generatePizza (premiumPair, freePair, seed):
+def generatePizzaWithPairs (premiumPair, freePair, seed):
     """
     premiumPair: tuple that represents a list of premium
     ingredients and a list of their possible modifiers
@@ -79,26 +79,10 @@ def generatePizza (premiumPair, freePair, seed):
     
     return pizza
 
+def generatePizza (seed):
+	return generatePizzaWithPairs((PREMIUM_LIST, PREMIUM_MOD_LIST), (FREE_LIST, FREE_MOD_LIST), seed)
 
-def main ():
-    
-    premiumList = fileToList ('premium.txt')
-    premiumModList = fileToList ('premiummod.txt')
-    freeList = fileToList ('free.txt')
-    freeModList = fileToList ('freemod.txt')
-	
-	# take in seed value from command line or stdin
-    seed = sys.argv[1] if len(sys.argv) > 1 else sys.stdin.readline()
-	
-    pizza = generatePizza ((premiumList,premiumModList), (freeList,freeModList), seed)
-
-    pizzaString = "One {} pizza with {}".format(
-        listToSentance(pizza[0]), listToSentance(pizza[1]))
-    
-    print (pizzaString)
-	
-main()
-
-    
-
-    
+PREMIUM_LIST = fileToList ('premium.txt')
+PREMIUM_MOD_LIST = fileToList ('premiummod.txt')
+FREE_LIST = fileToList ('free.txt')
+FREE_MOD_LIST = fileToList ('freemod.txt')
