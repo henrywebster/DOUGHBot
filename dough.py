@@ -1,12 +1,31 @@
 import random
+import sys
 from fractions import Fraction
 from functools import reduce
+
+VERSION_MAJOR = 0
+VERSION_MINOR = 2
 
 MAX_PREMIUM = 3
 MAX_FREE = 4
 
-MOD_CHANCE = 2
+"""
+	(c) 2017 Henry Webster
 
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+	
 # Helper functions for generatePizza
 
 def fileToList (filename):
@@ -23,8 +42,10 @@ def generatePairList (optionPair, size):
     component is optional.
     """
 
+	# The set() cast here might be the cause of the non-deterministic ordering
+	# for indgredients but this is low-priority.
     return list (map (
-        lambda x: ('', x) if random.randint(0, MOD_CHANCE) else (
+        lambda x: ('', x) if random.randint(0, 2) else (
             random.choice(optionPair[1]), x), set (
             map (lambda _: random.choice(optionPair[0]), [None] * size))))
 
@@ -33,7 +54,7 @@ def listToSentance (lst):
     Return the (MODIFIER, INGREDIENT) tuple list folded into a 
     comma-deliniated string.
 
-    [('extra', 'tofu'), ('', 'ham') => 'extra tofu, ham'
+    [('extra', 'tofu'), ('', 'ham')] => 'extra tofu, ham'
     """
 
     return str(reduce (lambda x, y: "{}, {}".format(x, y), map(
@@ -50,7 +71,7 @@ def generatePizza (premiumPair, freePair, seed):
     seed: used for initializing random values
     """
 
-    random.seed()
+    random.seed(seed)
 
     pizza = (generatePairList(
         premiumPair, random.randint(1, MAX_PREMIUM)), generatePairList(
@@ -65,15 +86,17 @@ def main ():
     premiumModList = fileToList ('premiummod.txt')
     freeList = fileToList ('free.txt')
     freeModList = fileToList ('freemod.txt')
-
-    pizza = generatePizza ((premiumList,premiumModList), (freeList,freeModList), 101212)
+	
+	# take in seed value from command line or stdin
+    seed = sys.argv[1] if len(sys.argv) > 1 else sys.stdin.readline()
+	
+    pizza = generatePizza ((premiumList,premiumModList), (freeList,freeModList), seed)
 
     pizzaString = "One {} pizza with {}".format(
         listToSentance(pizza[0]), listToSentance(pizza[1]))
     
     print (pizzaString)
-
-    
+	
 main()
 
     
