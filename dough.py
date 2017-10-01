@@ -4,7 +4,7 @@ from fractions import Fraction
 from functools import reduce
 
 VERSION_MAJOR = 0
-VERSION_MINOR = 2
+VERSION_MINOR = 3
 
 MAX_PREMIUM = 3
 MAX_FREE = 4

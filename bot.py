@@ -2,9 +2,12 @@ import twitter
 import hashlib
 import time
 import sys
+import logging
 
 # user includes
 import dough
+
+KEY_FILE = "keys.secret"
 
 """
 	(c) 2017 Henry Webster
@@ -41,17 +44,19 @@ def convertTextToData(text):
 def main():
 	
 	# set up twitter-python
-	CONSUMER_KEY = ""
-	CONSUMER_SECRET = ""
-	ACCESS_KEY = ""
-	ACCESS_SECRET = ""
+	with open(KEY_FILE) as f:
+	    CONSUMER_KEY = f.readline().strip()
+	    CONSUMER_SECRET = f.readline().strip()
+	    ACCESS_KEY = f.readline().strip()
+	    ACCESS_SECRET = f.readline().strip()
 
 	api = twitter.Api(
-		access_token_secret=ACCESS_SECRET, 
-		access_token_key=ACCESS_KEY, 
-		consumer_secret=CONSUMER_SECRET, 
-		consumer_key=CONSUMER_KEY)
+		consumer_key=CONSUMER_KEY,
+		consumer_secret=CONSUMER_SECRET,
+		access_token_key=ACCESS_KEY,
+		access_token_secret=ACCESS_SECRET)
 	
+	print("Starting DOUGHBot ver {}.{}".format(dough.VERSION_MAJOR,  dough.VERSION_MINOR), flush=True)
 	messageQueue = []
 	
 	# main program loop
