@@ -1,4 +1,4 @@
-
+#!/bin/bash
 
 # Lint the text files by removing blank lines and putting
 # items in alphabetical order.
