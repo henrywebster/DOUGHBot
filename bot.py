@@ -1,6 +1,8 @@
-import twitter
 import hashlib
 import time
+
+# lib includes
+import twitter
 
 # local includes
 import dough
@@ -30,70 +32,76 @@ KEY_FILE = "keys.secret"
 
 LOOP_TIMEOUT = 60
 
-def convertTextToData(text):
-	"""
-	Turns the input string into a hash digest for the RNG.
-	Current implementation uses MD5.
-	
-	Should look more into how the python RNG implements arbitrary length input to seeds.
-	Hashing is not required but in the future images or meta-data could be read in and
-	digested to a single seed value here.
-	"""
-	
-	return hashlib.md5(text.encode('utf_8')).digest()
+
+def convert_text_to_data(text):
+    """
+    Turns the input string into a hash digest for the RNG.
+    Current implementation uses MD5.
+
+    Should look more into how the python RNG implements arbitrary length input to seeds.
+    Hashing is not required but in the future images or meta-data could be read in and
+    digested to a single seed value here.
+    """
+
+    return hashlib.md5(text.encode('utf_8')).digest()
 
 
 def main():
+    """
+	Sets up twitter api and loops checking for twitter messages
+    """
 
-	print("Starting DOUGHBot ver {}.{}".format(VERSION_MAJOR,  VERSION_MINOR), flush=True)
-	
-	# set up twitter-python
-	with open(KEY_FILE) as f:
-	    CONSUMER_KEY = f.readline().strip()
-	    CONSUMER_SECRET = f.readline().strip()
-	    ACCESS_KEY = f.readline().strip()
-	    ACCESS_SECRET = f.readline().strip()
+    print("Starting DOUGHBot ver {}.{}".format(
+        VERSION_MAJOR, VERSION_MINOR), flush=True)
 
-	api = twitter.Api(
-		consumer_key=CONSUMER_KEY,
-		consumer_secret=CONSUMER_SECRET,
-		access_token_key=ACCESS_KEY,
-		access_token_secret=ACCESS_SECRET)
-	
-	# validate the image packs (recipes) are OK
-	validate.validateRecipeDir(validate.RECIPE_DIR)
-	
-	messageQueue = []
-	
-	# main program loop
-	while 1:
+    # set up twitter-python
+    with open(KEY_FILE) as _f:
+        _consumer_key = _f.readline().strip()
+        _consumer_secret = _f.readline().strip()
+        _access_key = _f.readline().strip()
+        _access_secret = _f.readline().strip()
 
-		if not messageQueue:
-			# if local queue is empty, make a request to twitter for message inbox contents
-			messageQueue = api.GetDirectMessages()
-		
-		if messageQueue:
-			# there is a message in the queue, take it for processing
-			message = messageQueue.pop()
-			api.DestroyDirectMessage(message.id)
-			
-			# convert the text component to a seed for the RNG
-			seed = convertTextToData(message.text)
+    api = twitter.Api(
+        consumer_key=_consumer_key,
+        consumer_secret=_consumer_secret,
+        access_token_key=_access_key,
+        access_token_secret=_access_secret)
 
-			# Use the DOUGH system on input data to get a pizza back. Yum.
-			pizza = dough.generatePizza(seed)
-			
-			# build and send a response
-			responseText = "One {} pizza with {} coming right up!".format(
-				dough.listToSentance(pizza[0]), dough.listToSentance(pizza[1]))
-	
-			api.PostDirectMessage(text=responseText, user_id=message.sender_id)
-			
-			# clear current message
-			message = None
-	
-		# wait for some time, if the pizza generation gets intensive, this time can be used to build
-		# up a queue of processed messages from the backlog
-		time.sleep(LOOP_TIMEOUT)
-	
+    # validate the image packs (recipes) are OK
+    validate.validateRecipeDir(validate.RECIPE_DIR)
+
+    messagequeue = []
+
+    # main program loop
+    while 1:
+
+        if not messagequeue:
+            # if local queue is empty, make a request to twitter for message inbox contents
+            messagequeue = api.GetDirectMessages()
+
+        if messagequeue:
+            # there is a message in the queue, take it for processing
+            message = messagequeue.pop()
+            api.DestroyDirectMessage(message.id)
+
+            # convert the text component to a seed for the RNG
+            seed = convert_text_to_data(message.text)
+
+            # Use the DOUGH system on input data to get a pizza back. Yum.
+            pizza = dough.generatePizza(seed)
+
+            # build and send a response
+            responsetext = "One {} pizza with {} coming right up!".format(
+                dough.listToSentance(pizza[0]), dough.listToSentance(pizza[1]))
+
+            api.PostDirectMessage(text=responsetext, user_id=message.sender_id)
+
+            # clear current message
+            message = None
+
+        # wait for some time, if the pizza generation gets intensive, this time can be used to build
+        # up a queue of processed messages from the backlog
+        time.sleep(LOOP_TIMEOUT)
+
+
 main()
