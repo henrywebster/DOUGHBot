@@ -1,5 +1,8 @@
+"""A twitter bot that reads direct message hashes and responds with pizza"""
+
+__version__ = "0.4"
+
 import hashlib
-import io
 import tempfile
 import time
 
@@ -11,12 +14,7 @@ import dough
 import oven
 import validate
 
-VERSION_MAJOR = 0
-VERSION_MINOR = 4
-
-KEY_FILE = "keys.secret"
-
-_LICENSE = """
+_NOTICE = """
 	(c) 2017 Henry Webster
 
     This program is free software: you can redistribute it and/or modify
@@ -31,12 +29,16 @@ _LICENSE = """
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+    The author of this program is not to be held liable for putting pineapple
+    on any pizzas.  
 """
 
-LOOP_TIMEOUT = 60
+_KEY_FILE = "keys.secret"
+_LOOP_TIMEOUT = 60
 
 
-def convert_text_to_data(text):
+def _convert_text_to_data(text):
     """
     Turns the input string into a hash digest for the RNG.
     Current implementation uses MD5.
@@ -46,21 +48,19 @@ def convert_text_to_data(text):
     digested to a single seed value here.
     """
 
-    return hashlib.md5(text.encode('utf_8')).digest()
+    return hashlib.md5(text.encode("utf_8")).digest()
 
 
 def main():
-    """
-        Sets up twitter api and loops checking for twitter messages
-    """
+    """main program loop"""
 
-    print(_LICENSE)
-    print("Starting DOUGHBot ver {}.{}".format(
-        VERSION_MAJOR, VERSION_MINOR), flush=True)
-    print("\tThis is considered an alpha version and not complete...")
+    # TODO move into seperate helper?
+    print(_NOTICE)
+    print("Starting DOUGHBot ver {}".format(__version__), flush=True)
+    print("\t*this is considered an alpha version and not complete...*")
 
     # set up twitter-python
-    with open(KEY_FILE) as _f:
+    with open(_KEY_FILE) as _f:
         _consumer_key = _f.readline().strip()
         _consumer_secret = _f.readline().strip()
         _access_key = _f.readline().strip()
@@ -83,23 +83,20 @@ def main():
     while 1:
 
         if not messagequeue:
-            # if local queue is empty, make a request to twitter for message inbox contents
             messagequeue = api.GetDirectMessages()
 
         if messagequeue:
-            # there is a message in the queue, take it for processing
             message = messagequeue.pop()
             api.DestroyDirectMessage(message.id)
 
-            # convert the text component to a seed for the RNG
-            seed = convert_text_to_data(message.text)
+            seed = _convert_text_to_data(message.text)
 
             # Use the DOUGH system on input data to get a pizza back. Yum.
-            pizza = dough.generatePizza(seed)
+            pizza = dough.generate_pizza(seed)
 
-            # build and send a response
-            responsetext = "For @{}, one {} pizza with {} coming right up!".format(
-                message.sender.screen_name, dough.listToSentance(pizza[0]), dough.listToSentance(pizza[1]))
+            # TODO make part of DOUGH module
+            responsetext = "For @{0}, one {1} pizza with {2} coming right up!".format(
+                message.sender.screen_name, dough.list_to_sentence(pizza[0]), dough.list_to_sentence(pizza[1]))
 
             # TODO
             # workaround: temprary file... I would rather do this in-memory but the API complains
@@ -108,12 +105,11 @@ def main():
                 oven.bake_pizza(pizza).save(imgfile, format="PNG")
                 api.PostUpdate(status=responsetext, media=imgfile)
 
-            # clear current message
             message = None
 
         # wait for some time, if the pizza generation gets intensive, this time can be used to build
         # up a queue of processed messages from the backlog
-        time.sleep(LOOP_TIMEOUT)
+        time.sleep(_LOOP_TIMEOUT)
 
 
 main()
