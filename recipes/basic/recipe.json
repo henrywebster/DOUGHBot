@@ -12,12 +12,13 @@
         },
         "premium": {
             "bacon": "bacon.png",
-            "cheese": null,
+            "cheese": "cheese.png",
             "chicken": "chicken.png",
             "ham": "ham.png",
-            "kiwi": "kiwi.png",
-            "sausage": null,
-            "tofu": null
+            "pepperoni": "pepperoni.png",
+            "kiwi": null,
+            "sausage": "sausage.png",
+            "tofu": "tofu.png"
         }
     },
     "name": "basic",
