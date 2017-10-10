@@ -54,10 +54,11 @@ def _convert_text_to_data(text):
 def main():
     """main program loop"""
 
-    # TODO move into seperate helper?
+    # TODO 
+    # * move into seperate helper?
     print(_NOTICE)
     print("Starting DOUGHBot ver {}".format(__version__), flush=True)
-    print("\t*this is considered an alpha version and not complete...*")
+    print("*this is considered an alpha version and not complete...*")
 
     # set up twitter-python
     with open(_KEY_FILE) as _f:
@@ -72,8 +73,6 @@ def main():
         access_token_key=_access_key,
         access_token_secret=_access_secret)
 
-    # validate the image packs (recipes) are OK
-    validate.validateRecipeDir(validate.RECIPE_DIR)
 
     oven.stock_kitchen()
 
@@ -93,13 +92,10 @@ def main():
 
             # Use the DOUGH system on input data to get a pizza back. Yum.
             pizza = dough.generate_pizza(seed)
-
-            # TODO make part of DOUGH module
-            responsetext = "For @{0}, one {1} pizza with {2} coming right up!".format(
-                message.sender.screen_name, dough.list_to_sentence(pizza[0]), dough.list_to_sentence(pizza[1]))
+            responsetext = dough.generate_response(pizza, "@" + message.sender.screen_name)
 
             # TODO
-            # workaround: temprary file... I would rather do this in-memory but the API complains
+            # * workaround: temprary file... I would rather do this in-memory but the API complains
 
             with tempfile.TemporaryFile(mode="rb+") as imgfile:
                 oven.bake_pizza(pizza).save(imgfile, format="PNG")

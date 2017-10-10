@@ -13,11 +13,13 @@ def _file_to_list(filename):
     return list(filter(None, (line.rstrip() for line in open(filename))))
 
 
-# TODO: clean this up
+# TODO
+# * clean this up
 PREMIUM_LIST = _file_to_list('premium.txt')
 PREMIUM_MOD_LIST = _file_to_list('premiummod.txt')
 FREE_LIST = _file_to_list('free.txt')
 FREE_MOD_LIST = _file_to_list('freemod.txt')
+RESPONSE_LIST = _file_to_list('responses.txt')
 
 
 def _generate_pair_list(option_pair, size):
@@ -36,7 +38,7 @@ def _generate_pair_list(option_pair, size):
             map(lambda _: random.choice(option_pair[0]), [None] * size))))
 
 
-def list_to_sentence(lst):
+def _list_to_sentence(lst):
     """
     Return the (MODIFIER, INGREDIENT) tuple list folded into a
     comma-deliniated string.
@@ -50,6 +52,19 @@ def list_to_sentence(lst):
 
     return str(reduce(lambda x, y: "{}, {}".format(x, y), map(
         lambda x: "{} {}".format(x[0], x[1]) if x[0] else x[1], lst)))
+
+
+def generate_response(pizza, name, seed=None, responses=RESPONSE_LIST):
+    """Create a random string response"""
+
+    # TODO 
+    # * fill out docstring
+    # * figure out coupling & dangerous default warning
+    random.seed(seed)
+
+    return random.choice(responses).format(name,
+                                           _list_to_sentence(pizza[0]),
+                                           _list_to_sentence(pizza[1]))
 
 
 def generate_pizza(seed=None,

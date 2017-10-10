@@ -5,7 +5,7 @@
 
 # For human organizational purposes only; program does not care.
 
-lists=(premium.txt premiummod.txt free.txt freemod.txt)
+lists=(premium.txt premiummod.txt free.txt freemod.txt responses.txt)
 
 for list in "${lists[@]}"
 do
