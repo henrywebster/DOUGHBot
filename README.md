@@ -9,6 +9,8 @@ with a pizza order and message.
 
 It uses [python-twitter](https://github.com/bear/python-twitter) to interact with the Twitter API in Python.
 
+[Pillow](https://github.com/python-pillow/Pillow) is the image processing library used for generating the images.
+
 ### DOUGH (secret sauce)
 The DOUGH module takes in ingredient and modifer lists and enables randomized pizza orders based on those ingredients.
 There are two kinds of ingredients:
