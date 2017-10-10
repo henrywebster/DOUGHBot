@@ -1,0 +1,9 @@
+For {0}, one {1} pizza with {2} coming right up!
+How about a {1} pizza with {2}, {0}?
+Yum, yum! {1} pizza with {2} coming right to {0}!
+{0}, did you order a {1} pizza with {2}? Really?
+We've got a {1} pizza with {2} for {0}!
+The world's first {1} pizza with {2} for {0}!
+I think you'll really enjoy this one, {0}. A {1} pizza with {2}!
+The {0} special! A {1} pizza with {2}. I'm sure it will catch on!
+The usual for {0}. Yes, the {1} with {2} of course!
