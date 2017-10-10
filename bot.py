@@ -1,4 +1,6 @@
 import hashlib
+import io
+import tempfile
 import time
 
 # lib includes
@@ -6,14 +8,15 @@ import twitter
 
 # local includes
 import dough
+import oven
 import validate
 
 VERSION_MAJOR = 0
-VERSION_MINOR = 3
+VERSION_MINOR = 4
 
 KEY_FILE = "keys.secret"
 
-"""
+_LICENSE = """
 	(c) 2017 Henry Webster
 
     This program is free software: you can redistribute it and/or modify
@@ -51,8 +54,12 @@ def main():
 	Sets up twitter api and loops checking for twitter messages
     """
 
+
+    print(_LICENSE)
     print("Starting DOUGHBot ver {}.{}".format(
         VERSION_MAJOR, VERSION_MINOR), flush=True)
+    print("This is considered an alpha version and not complete...")
+
 
     # set up twitter-python
     with open(KEY_FILE) as _f:
@@ -69,6 +76,8 @@ def main():
 
     # validate the image packs (recipes) are OK
     validate.validateRecipeDir(validate.RECIPE_DIR)
+
+    oven.stock_kitchen()
 
     messagequeue = []
 
@@ -91,11 +100,20 @@ def main():
             pizza = dough.generatePizza(seed)
 
             # build and send a response
-            responsetext = "One {} pizza with {} coming right up!".format(
-                dough.listToSentance(pizza[0]), dough.listToSentance(pizza[1]))
+            responsetext = "For @{}, one {} pizza with {} coming right up!".format(
+                message.sender.screen_name, dough.listToSentance(pizza[0]), dough.listToSentance(pizza[1]))
 
-            api.PostDirectMessage(text=responsetext, user_id=message.sender_id)
+           
+            img = tempfile.TemporaryFile(mode="rb+")
+           #imgwriter = io.BufferedWriter(imgbuffer)
+            #imgreader = io.BufferedReader(imgbuffer)
+            #fimg = open('pizza.png', "rb+")
+            responseimg = oven.bake_pizza(pizza).save(img, format="PNG")
+            
+			#api.PostDirectMessage(text=responsetext, ,user_id=message.sender_id)
+            api.PostUpdate(status=responsetext, media=img)
 
+            img.close()
             # clear current message
             message = None
 
