@@ -8,6 +8,7 @@ The DOUGH bot is at <https://twitter.com/_DOUGHBot>. It will read incoming direc
 with a pizza order and message.
 
 It uses [python-twitter](https://github.com/bear/python-twitter) to interact with the Twitter API in Python.
+
 [Pillow](https://github.com/python-pillow/Pillow) is the image processing library used for generating the images.
 
 ### DOUGH (secret sauce)
