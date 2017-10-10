@@ -1,11 +1,13 @@
 import twitter
 import hashlib
 import time
-import sys
-import logging
 
-# user includes
+# local includes
 import dough
+import validate
+
+VERSION_MAJOR = 0
+VERSION_MINOR = 3
 
 KEY_FILE = "keys.secret"
 
@@ -42,6 +44,8 @@ def convertTextToData(text):
 
 
 def main():
+
+	print("Starting DOUGHBot ver {}.{}".format(VERSION_MAJOR,  VERSION_MINOR), flush=True)
 	
 	# set up twitter-python
 	with open(KEY_FILE) as f:
@@ -56,7 +60,9 @@ def main():
 		access_token_key=ACCESS_KEY,
 		access_token_secret=ACCESS_SECRET)
 	
-	print("Starting DOUGHBot ver {}.{}".format(dough.VERSION_MAJOR,  dough.VERSION_MINOR), flush=True)
+	# validate the image packs (recipes) are OK
+	validate.validateRecipeDir(validate.RECIPE_DIR)
+	
 	messageQueue = []
 	
 	# main program loop
