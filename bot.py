@@ -51,15 +51,13 @@ def convert_text_to_data(text):
 
 def main():
     """
-	Sets up twitter api and loops checking for twitter messages
+        Sets up twitter api and loops checking for twitter messages
     """
-
 
     print(_LICENSE)
     print("Starting DOUGHBot ver {}.{}".format(
         VERSION_MAJOR, VERSION_MINOR), flush=True)
-    print("This is considered an alpha version and not complete...")
-
+    print("\tThis is considered an alpha version and not complete...")
 
     # set up twitter-python
     with open(KEY_FILE) as _f:
@@ -103,17 +101,13 @@ def main():
             responsetext = "For @{}, one {} pizza with {} coming right up!".format(
                 message.sender.screen_name, dough.listToSentance(pizza[0]), dough.listToSentance(pizza[1]))
 
-           
-            img = tempfile.TemporaryFile(mode="rb+")
-           #imgwriter = io.BufferedWriter(imgbuffer)
-            #imgreader = io.BufferedReader(imgbuffer)
-            #fimg = open('pizza.png', "rb+")
-            responseimg = oven.bake_pizza(pizza).save(img, format="PNG")
-            
-			#api.PostDirectMessage(text=responsetext, ,user_id=message.sender_id)
-            api.PostUpdate(status=responsetext, media=img)
+            # TODO
+            # workaround: temprary file... I would rather do this in-memory but the API complains
 
-            img.close()
+            with tempfile.TemporaryFile(mode="rb+") as imgfile:
+                oven.bake_pizza(pizza).save(imgfile, format="PNG")
+                api.PostUpdate(status=responsetext, media=imgfile)
+
             # clear current message
             message = None
 

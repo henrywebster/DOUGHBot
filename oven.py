@@ -25,6 +25,10 @@ def stock_kitchen():
 def bake_pizza(pizza):
     """
 	Create an image of the input pizza
+
+	TODO: THESE VARIABLE NAMES / ORGANIZATION OF THIS IS TERRIBLE
+
+	REFACTOR REFACTOR REFACTOR
     """
 
     # blank image
@@ -32,6 +36,12 @@ def bake_pizza(pizza):
 
     # image of pizza crust
     piz = Image.new("RGBA", (64, 64), 0xff52c1ea)
+
+    tomato = Image.new("RGBA", (64, 64))
+    sauce = ImageDraw.Draw(tomato)
+    sauce.ellipse([4, 4, 60, 60], fill=0xff0440d8)
+
+    piz = Image.alpha_composite(piz, tomato)
 
     # mask for circu-lating the pizza
     mask = _createPizzaMask(64, 64)
