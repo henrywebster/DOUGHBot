@@ -95,10 +95,12 @@ def main():
 
             # TODO
             # * workaround: temprary file... I would rather do this in-memory but the API complains
+            # * verify it is closing
 
-            with tempfile.TemporaryFile(mode="rb+") as imgfile:
+            filed, filepath = tempfile.mkstemp(suffix=".png", dir=".")
+            with open(filed, "rb+") as imgfile:
                 oven.bake_pizza(pizza).save(imgfile, format="PNG")
-                api.PostUpdate(status=responsetext, media=imgfile)
+                api.PostUpdate(status=responsetext, media=filepath)
 
             message = None
 
