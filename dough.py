@@ -17,11 +17,11 @@ def _file_to_list(filename):
 
 # TODO
 # * clean this up
-PREMIUM_LIST = _file_to_list('premium.txt')
-PREMIUM_MOD_LIST = _file_to_list('premiummod.txt')
-FREE_LIST = _file_to_list('free.txt')
-FREE_MOD_LIST = _file_to_list('freemod.txt')
-RESPONSE_LIST = _file_to_list('responses.txt')
+PREMIUM_LIST = _file_to_list("premium.txt")
+PREMIUM_MOD_LIST = _file_to_list("premiummod.txt")
+FREE_LIST = _file_to_list("free.txt")
+FREE_MOD_LIST = _file_to_list("freemod.txt")
+RESPONSE_LIST = _file_to_list("responses.txt")
 
 
 def _generate_pair_list(option_pair, size):
@@ -35,7 +35,7 @@ def _generate_pair_list(option_pair, size):
     # The set() cast here might be the cause of the non-deterministic ordering
     # for indgredients but this is low-priority.
     return list(map(
-        lambda x: ('', x) if random.randint(0, 2) else(
+        lambda x: ("", x) if random.randint(0, 2) else(
             random.choice(option_pair[1]), x), set(
             map(lambda _: random.choice(option_pair[0]), [None] * size))))
 
@@ -45,7 +45,7 @@ def _list_to_sentence(lst):
     Return the (MODIFIER, INGREDIENT) tuple list folded into a
     comma-deliniated string.
 
-    [('extra', 'tofu'), ('', 'ham')] => 'extra tofu, ham'
+    [("extra", "tofu"), ("", "ham")] => "extra tofu, ham"
 
     lst: (MODIFER, INGREDIENT) tuple list
 

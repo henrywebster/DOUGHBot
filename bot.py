@@ -12,7 +12,6 @@ import twitter
 # local includes
 import dough
 import oven
-import validate
 
 _NOTICE = """
 	(c) 2017 Henry Webster
