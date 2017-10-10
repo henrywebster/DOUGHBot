@@ -6,6 +6,8 @@ from functools import reduce
 _MAX_PREMIUM = 3
 _MAX_FREE = 4
 
+# TODO
+# * use list comprehensions instead of functional to be COOL and PYTHONIC
 
 def _file_to_list(filename):
     """turn a file with one item to a line into a python list"""

@@ -6,4 +6,4 @@ The {0} special! A {1} pizza with {2}. I'm sure it will catch on!
 The usual for {0}. Yes, the {1} with {2} of course!
 The world's first {1} pizza with {2} for {0}!
 We've got a {1} pizza with {2} for {0}!
-Yum, yum! {1} pizza with {2} coming right to {0}!
+Yum, yum! One {1} pizza with {2} coming right to {0}!
