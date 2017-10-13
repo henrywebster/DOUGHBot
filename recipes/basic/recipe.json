@@ -1,6 +1,5 @@
 {
-    "category": {
-        "free": {
+    "ingredients": {
             "banana pepper": "banana_pepper.png",
             "feta": "feta.png",
             "garlic": null,
@@ -8,9 +7,7 @@
             "macaroni": "macaroni.png",
             "mushroom": "mushroom.png",
             "pineapple": "pineapple.png",
-            "spinach": "spinach.png"
-        },
-        "premium": {
+            "spinach": "spinach.png",
             "bacon": "bacon.png",
             "cheese": "cheese.png",
             "chicken": "chicken.png",
@@ -19,7 +16,6 @@
             "kiwi": null,
             "sausage": "sausage.png",
             "tofu": "tofu.png"
-        }
     },
     "name": "basic",
     "size": 64
