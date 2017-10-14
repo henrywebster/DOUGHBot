@@ -24,7 +24,7 @@ class Oven:
 
     def __init__(self, rootdir):
         self.rootdir = rootdir
-        self.recipebook = self.stock_kitchen(self.rootdir)
+        self.recipebook = self._stock_kitchen(self.rootdir)
 
         # 512px is Twitter recommended, but I thought it looked weird with these
         self.imgsize = (320, 320)
@@ -43,7 +43,7 @@ class Oven:
 
         return pizzaimg.resize(self.imgsize, Image.NEAREST)
 
-    def stock_kitchen(self, rootdir):
+    def _stock_kitchen(self, rootdir):
         """
         Fill up the internal dictionary with all the images from the image 'recipes'.
         """
