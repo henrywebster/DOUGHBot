@@ -18,7 +18,7 @@ Pizza = namedtuple("Pizza", "premium, free")
 # This functional / list comprehension hybrid is beautiful however
 #   [("extra", "tofu"), ("", "ham")] => "extra tofu, ham"
 setattr(PairList, "__str__", lambda pair: reduce("{}, {}".format, ["{} {}".format(
-    modifier, ingredient) if modifier else ingredient for modifier, ingredient in pair.toppingpairs]))
+    modifier, topping) if modifier else topping for modifier, topping in pair.toppingpairs]))
 
 
 class Dough():
