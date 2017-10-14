@@ -1,6 +1,6 @@
 """A twitter bot that reads direct message hashes and responds with pizza"""
 
-__version__ = "0.5"
+__version__ = "0.7"
 
 import hashlib
 import tempfile
@@ -73,6 +73,7 @@ def main():
         access_token_secret=_access_secret)
 
     messagequeue = []
+    pizzaoven = oven.Oven("recipe")
 
     # main program loop
     while 1:
@@ -96,7 +97,7 @@ def main():
 
             filed, filepath = tempfile.mkstemp(suffix=".png", dir=".")
             with open(filed, "rb+") as imgfile:
-                oven.bake_pizza(pizza).save(imgfile, format="PNG")
+                pizzaoven.bake(pizza, pizzaoven.recipebook["basic"]).save(imgfile, format="PNG")
                 api.PostUpdate(status=responsetext, media=filepath)
 
             message = None
