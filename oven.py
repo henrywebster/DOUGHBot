@@ -5,12 +5,11 @@ import os
 from collections import namedtuple
 from PIL import Image, ImageDraw
 
-MarketEntry = namedtuple("MarketEntry", "ingredients, name, size")
+MarketEntry = namedtuple("MarketEntry", "toppings, name, size")
 
 MARKET_DIR = "recipes/"
 _MARKET_DICT = {}
 
-_IMAGE_DICT = {}
 _BLANK_IMG = Image.new("RGBA", (64, 64))
 
 # TODO
@@ -19,21 +18,26 @@ _BLANK_IMG = Image.new("RGBA", (64, 64))
 
 def stock_kitchen():
     """
-    Fill up the internal dictionaries with all the images from the markets.
+    Fill up the internal dictionary with all the images from the image 'recipes'.
     """
 
+    recipebook = {}
     for subdir, currdir, _ in os.walk(MARKET_DIR):
         for recipedir in currdir:
             with open(os.path.join(subdir, recipedir, "recipe.json")) as _f:
-                ingredientdict = json.load(_f)
+                recipe = json.load(_f)
 
-            marketentry = MarketEntry._make(ingredientdict.values())
-            _MARKET_DICT[marketentry.name] = marketentry
+            marketentry = MarketEntry._make(recipe.values())
 
-            for ingredient, imagefile in marketentry.ingredients.items():
-                marketentry.ingredients[ingredient] = Image.open(
+            # replace filenames with image objects
+            for topping, imagefile in marketentry.toppings.items():
+                marketentry.toppings[topping] = Image.open(
                     os.path.join(
                         subdir, recipedir, imagefile)) if imagefile else _BLANK_IMG
+
+            recipebook[marketentry.name] = marketentry
+
+    return recipebook
 
 
 def bake_pizza(pizza, marketname="basic"):
@@ -69,8 +73,8 @@ def bake_pizza(pizza, marketname="basic"):
    # list comprehsenion
    
     for pair in pizza:
-        for _, ingredient in pair:
-            pizzaimg = Image.alpha_composite(pizzaimg, market.ingredients[ingredient])
+        for _, topping in pair:
+            pizzaimg = Image.alpha_composite(pizzaimg, market.toppings[topping])
 
     pizzaimg = Image.alpha_composite(piz, pizzaimg)
     pizzaimg = Image.composite(pizzaimg, background, mask)
@@ -85,6 +89,8 @@ def _create_pizza_mask(size):
 
     mask = Image.new("RGBA", size)
     draw = ImageDraw.Draw(mask)
-    draw.ellipse([0, 0, size], fill="white")
+    draw.ellipse([0, 0, size], fill=0xffffffff)
 
     return mask
+
+_MARKET_DICT = stock_kitchen()

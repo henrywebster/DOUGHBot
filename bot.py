@@ -72,9 +72,6 @@ def main():
         access_token_key=_access_key,
         access_token_secret=_access_secret)
 
-
-    oven.stock_kitchen()
-
     messagequeue = []
 
     # main program loop
