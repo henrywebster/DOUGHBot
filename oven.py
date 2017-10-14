@@ -32,9 +32,10 @@ class Oven:
         Composite images from the recipe according to what is in the pizza.
         """
         pizzaimg = self.recipebook.crust
-
+        
+        # the syntax with named tuples got out of hand
         for pair in pizza:
-            for _, topping in pair:
+            for _, topping in pair.toppingpairs:
                 pizzaimg = Image.alpha_composite(
                     pizzaimg, self.recipebook.toppings[topping])
 

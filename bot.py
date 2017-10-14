@@ -51,6 +51,12 @@ def _convert_text_to_data(text):
     return hashlib.md5(text.encode("utf_8")).digest()
 
 
+def _file_to_list(filename):
+    """turn a file with one item to a line into a python list"""
+
+    return [line.rstrip() for line in open(filename) if not None]
+
+
 def main():
     """main program loop"""
 
@@ -73,6 +79,15 @@ def main():
         access_token_key=_access_key,
         access_token_secret=_access_secret)
 
+    # set up D.O.U.G.H.
+
+    dsystem = dough.Dough(
+        _file_to_list("premium.txt"),
+        _file_to_list("premiummod.txt"),
+        _file_to_list("free.txt"),
+        _file_to_list("freemod.txt"),
+        _file_to_list("responses.txt"))
+
     messagequeue = []
     basicoven = oven.Oven(os.path.join("recipes", "basic"))
 
@@ -89,8 +104,8 @@ def main():
             seed = _convert_text_to_data(message.text)
 
             # Use the DOUGH system on input data to get a pizza back. Yum.
-            pizza = dough.generate_pizza(seed)
-            responsetext = dough.generate_response(
+            pizza = dsystem.generate_pizza(seed)
+            responsetext = dsystem.generate_response(
                 pizza, "@" + message.sender.screen_name)
 
             # TODO
