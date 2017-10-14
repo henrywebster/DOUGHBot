@@ -6,6 +6,7 @@ import hashlib
 import os
 import tempfile
 import time
+from collections import deque
 
 # lib includes
 import twitter
@@ -88,14 +89,15 @@ def main():
         _file_to_list("freemod.txt"),
         _file_to_list("responses.txt"))
 
-    messagequeue = []
+    # might not be needed by why not be scalable
+    messagequeue = deque()
     basicoven = oven.Oven(os.path.join("recipes", "basic"))
 
     # main program loop
     while 1:
 
         if not messagequeue:
-            messagequeue = api.GetDirectMessages()
+            messagequeue = deque(api.GetDirectMessages())
 
         if messagequeue:
             message = messagequeue.pop()
@@ -113,10 +115,12 @@ def main():
             # * verify it is closing
 
             filed, filepath = tempfile.mkstemp(suffix=".png", dir=".")
-            with open(filed, "rb+") as imgfile:
-                basicoven.bake(pizza).save(imgfile, format="PNG")
-                api.PostUpdate(status=responsetext, media=filepath)
-
+            try:
+                with os.fdopen(filed, "rb+") as imgfile:
+                    basicoven.bake(pizza).save(imgfile, format="PNG")
+                    api.PostUpdate(status=responsetext, media=filepath)
+            finally:
+                os.remove(filepath)
             message = None
 
         # wait for some time, if the pizza generation gets intensive, this time can be used to build

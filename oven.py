@@ -6,10 +6,10 @@ from collections import namedtuple
 from PIL import Image
 
 # TODO
-# * Add pizza background image instead of drawing natively.
-# * Load multiple recipes and vary size according to data. Define scale in JSON?
 # * Handle user error on entering directory names
 # * Have only one oven per recipe type?
+# * Image seems blurry on twitter
+# * Fix background color
 
 RecipeBook = namedtuple("RecipeBook", "toppings, crust, name, size")
 
@@ -25,14 +25,16 @@ class Oven:
     def __init__(self, rootdir):
         self.rootdir = rootdir
         self.recipebook = self.stock_kitchen(self.rootdir)
-        self.imgsize = (512, 512)
+
+        # 512px is Twitter recommended, but I thought it looked weird with these
+        self.imgsize = (320, 320)
 
     def bake(self, pizza):
         """
         Composite images from the recipe according to what is in the pizza.
         """
         pizzaimg = self.recipebook.crust
-        
+
         # the syntax with named tuples got out of hand
         for pair in pizza:
             for _, topping in pair.toppingpairs:
