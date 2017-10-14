@@ -1,10 +1,12 @@
 """A twitter bot that reads direct message hashes and responds with pizza"""
 
-__version__ = "0.6"
+__version__ = "0.7"
 
 import hashlib
+import os
 import tempfile
 import time
+from collections import deque
 
 # lib includes
 import twitter
@@ -50,10 +52,16 @@ def _convert_text_to_data(text):
     return hashlib.md5(text.encode("utf_8")).digest()
 
 
+def _file_to_list(filename):
+    """turn a file with one item to a line into a python list"""
+
+    return [line.rstrip() for line in open(filename) if not None]
+
+
 def main():
     """main program loop"""
 
-    # TODO 
+    # TODO
     # * move into seperate helper?
     print(_NOTICE)
     print("Starting DOUGHBot ver {}".format(__version__), flush=True)
@@ -72,13 +80,24 @@ def main():
         access_token_key=_access_key,
         access_token_secret=_access_secret)
 
-    messagequeue = []
+    # set up D.O.U.G.H.
+
+    dsystem = dough.Dough(
+        _file_to_list("premium.txt"),
+        _file_to_list("premiummod.txt"),
+        _file_to_list("free.txt"),
+        _file_to_list("freemod.txt"),
+        _file_to_list("responses.txt"))
+
+    # might not be needed by why not be scalable
+    messagequeue = deque()
+    basicoven = oven.Oven(os.path.join("recipes", "basic"))
 
     # main program loop
     while 1:
 
         if not messagequeue:
-            messagequeue = api.GetDirectMessages()
+            messagequeue = deque(api.GetDirectMessages())
 
         if messagequeue:
             message = messagequeue.pop()
@@ -87,18 +106,21 @@ def main():
             seed = _convert_text_to_data(message.text)
 
             # Use the DOUGH system on input data to get a pizza back. Yum.
-            pizza = dough.generate_pizza(seed)
-            responsetext = dough.generate_response(pizza, "@" + message.sender.screen_name)
+            pizza = dsystem.generate_pizza(seed)
+            responsetext = dsystem.generate_response(
+                pizza, "@" + message.sender.screen_name)
 
             # TODO
             # * workaround: temprary file... I would rather do this in-memory but the API complains
             # * verify it is closing
 
             filed, filepath = tempfile.mkstemp(suffix=".png", dir=".")
-            with open(filed, "rb+") as imgfile:
-                oven.bake_pizza(pizza).save(imgfile, format="PNG")
-                api.PostUpdate(status=responsetext, media=filepath)
-
+            try:
+                with os.fdopen(filed, "rb+") as imgfile:
+                    basicoven.bake(pizza).save(imgfile, format="PNG")
+                    api.PostUpdate(status=responsetext, media=filepath)
+            finally:
+                os.remove(filepath)
             message = None
 
         # wait for some time, if the pizza generation gets intensive, this time can be used to build

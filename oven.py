@@ -3,94 +3,64 @@
 import json
 import os
 from collections import namedtuple
-from PIL import Image, ImageDraw
-
-MarketEntry = namedtuple("MarketEntry", "toppings, name, size")
-
-MARKET_DIR = "recipes/"
-_MARKET_DICT = {}
-
-_BLANK_IMG = Image.new("RGBA", (64, 64))
+from PIL import Image
 
 # TODO
-# * Add pizza background image instead of drawing natively.
-# * Load multiple recipes and vary size according to data. Define scale in JSON?
+# * Handle user error on entering directory names
+# * Have only one oven per recipe type?
+# * Image seems blurry on twitter
+# * Fix background color
 
-def stock_kitchen():
+RecipeBook = namedtuple("RecipeBook", "toppings, crust, name, size")
+
+
+class Oven:
     """
-    Fill up the internal dictionary with all the images from the image 'recipes'.
+    The Oven class takes a recipe dir, which has subdirs of the pictures it needs to load and a definition
+    formatted in json called 'recipe.json'.
+
+    The Oven returns an image of a pizza based on what that pizza is composed of.
     """
 
-    recipebook = {}
-    for subdir, currdir, _ in os.walk(MARKET_DIR):
-        for recipedir in currdir:
-            with open(os.path.join(subdir, recipedir, "recipe.json")) as _f:
-                recipe = json.load(_f)
+    def __init__(self, rootdir):
+        self.rootdir = rootdir
+        self.recipebook = self._stock_kitchen(self.rootdir)
 
-            marketentry = MarketEntry._make(recipe.values())
+        # 512px is Twitter recommended, but I thought it looked weird with these
+        self.imgsize = (320, 320)
+
+    def bake(self, pizza):
+        """
+        Composite images from the recipe according to what is in the pizza.
+        """
+        pizzaimg = self.recipebook.crust
+
+        # the syntax with named tuples got out of hand
+        for pair in pizza:
+            for _, topping in pair.toppingpairs:
+                pizzaimg = Image.alpha_composite(
+                    pizzaimg, self.recipebook.toppings[topping])
+
+        return pizzaimg.resize(self.imgsize, Image.NEAREST)
+
+    def _stock_kitchen(self, rootdir):
+        """
+        Fill up the internal dictionary with all the images from the image 'recipes'.
+        """
+
+        with open(os.path.join(rootdir, "recipe.json")) as _f:
+            recipe = json.load(_f)
+
+            # this is a bit of a hack: mutate the dictionary before it goes into the immutable tuple
+            recipe["crust"] = Image.open(
+                os.path.join(rootdir, recipe["crust"]))
+            recipebook = RecipeBook._make(recipe.values())
 
             # replace filenames with image objects
-            for topping, imagefile in marketentry.toppings.items():
-                marketentry.toppings[topping] = Image.open(
+            for topping, imagefile in recipebook.toppings.items():
+                recipebook.toppings[topping] = Image.open(
                     os.path.join(
-                        subdir, recipedir, imagefile)) if imagefile else _BLANK_IMG
+                        rootdir, imagefile)) if imagefile else Image.new(
+                            "RGBA", (recipebook.size, recipebook.size))
 
-            recipebook[marketentry.name] = marketentry
-
-    return recipebook
-
-
-def bake_pizza(pizza, marketname="basic"):
-    """
-        Create an image of the input pizza
-
-        TODO: VARIABLE NAMES / ORGANIZATION OF THIS IS TERRIBLE
-
-        REFACTOR REFACTOR REFACTOR
-    """
-
-    market = _MARKET_DICT[marketname]
-    size = (market.size, market.size)
-
-    # blank image
-    background = Image.new("RGBA", size)
-
-    # image of pizza crust
-    piz = Image.new("RGBA", size, 0xff52c1ea)
-
-    tomato = Image.new("RGBA", size)
-    sauce = ImageDraw.Draw(tomato)
-    sauce.ellipse([4, 4, 60, 60], fill=0xff2440d8)
-
-    piz = Image.alpha_composite(piz, tomato)
-
-    # mask for circu-lating the pizza
-    mask = _create_pizza_mask(size)
-
-    # add toppings
-    pizzaimg = Image.new("RGBA", size)
-
-   # list comprehsenion
-   
-    for pair in pizza:
-        for _, topping in pair:
-            pizzaimg = Image.alpha_composite(pizzaimg, market.toppings[topping])
-
-    pizzaimg = Image.alpha_composite(piz, pizzaimg)
-    pizzaimg = Image.composite(pizzaimg, background, mask)
-
-    return pizzaimg.resize((64 * 5, 64 * 5), Image.NEAREST)
-
-
-def _create_pizza_mask(size):
-    """
-    Creates an ellipse of the needed size for an image mask to "carve out" pizza
-    """
-
-    mask = Image.new("RGBA", size)
-    draw = ImageDraw.Draw(mask)
-    draw.ellipse([0, 0, size], fill=0xffffffff)
-
-    return mask
-
-_MARKET_DICT = stock_kitchen()
+        return recipebook

@@ -17,6 +17,7 @@
             "sausage": "sausage.png",
             "tofu": "tofu.png"
     },
+    "crust": "crust.png",
     "name": "basic",
     "size": 64
 }
