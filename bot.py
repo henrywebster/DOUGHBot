@@ -110,10 +110,7 @@ def main():
             responsetext = dsystem.generate_response(
                 pizza, "@" + message.sender.screen_name)
 
-            # TODO
             # * workaround: temprary file... I would rather do this in-memory but the API complains
-            # * verify it is closing
-
             filed, filepath = tempfile.mkstemp(suffix=".png", dir=".")
             try:
                 with os.fdopen(filed, "rb+") as imgfile:
