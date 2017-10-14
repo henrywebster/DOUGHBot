@@ -3,6 +3,7 @@
 __version__ = "0.7"
 
 import hashlib
+import os
 import tempfile
 import time
 
@@ -53,7 +54,7 @@ def _convert_text_to_data(text):
 def main():
     """main program loop"""
 
-    # TODO 
+    # TODO
     # * move into seperate helper?
     print(_NOTICE)
     print("Starting DOUGHBot ver {}".format(__version__), flush=True)
@@ -73,7 +74,7 @@ def main():
         access_token_secret=_access_secret)
 
     messagequeue = []
-    pizzaoven = oven.Oven("recipe")
+    basicoven = oven.Oven(os.path.join("recipes", "basic"))
 
     # main program loop
     while 1:
@@ -89,7 +90,8 @@ def main():
 
             # Use the DOUGH system on input data to get a pizza back. Yum.
             pizza = dough.generate_pizza(seed)
-            responsetext = dough.generate_response(pizza, "@" + message.sender.screen_name)
+            responsetext = dough.generate_response(
+                pizza, "@" + message.sender.screen_name)
 
             # TODO
             # * workaround: temprary file... I would rather do this in-memory but the API complains
@@ -97,7 +99,7 @@ def main():
 
             filed, filepath = tempfile.mkstemp(suffix=".png", dir=".")
             with open(filed, "rb+") as imgfile:
-                pizzaoven.bake(pizza, pizzaoven.recipebook["basic"]).save(imgfile, format="PNG")
+                basicoven.bake(pizza).save(imgfile, format="PNG")
                 api.PostUpdate(status=responsetext, media=filepath)
 
             message = None

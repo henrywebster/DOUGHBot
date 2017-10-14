@@ -13,6 +13,7 @@ ToppingPair = namedtuple("ToppingPair", "modifier, topping")
 # TODO
 # * use list comprehensions instead of functional to be COOL and PYTHONIC
 
+
 def _file_to_list(filename):
     """turn a file with one item to a line into a python list"""
 
@@ -44,6 +45,7 @@ def _generate_pair_list(category, size):
             category.toppings), x) for x in set(random.choice(
                 category.modifiers) for _ in range(size))]
 
+
 def _list_to_sentence(tuplelist):
     """
     Return the (MODIFIER, INGREDIENT) tuple list folded into a
@@ -60,10 +62,11 @@ def _list_to_sentence(tuplelist):
     return reduce("{}, {}".format, ["{} {}".format(
         modifier, ingredient) if modifier else ingredient for modifier, ingredient in tuplelist])
 
+
 def generate_response(pizza, name, seed=None, responses=RESPONSE_LIST):
     """Create a random string response"""
 
-    # TODO 
+    # TODO
     # * fill out docstring
     # * figure out coupling & dangerous default warning
     random.seed(seed)
