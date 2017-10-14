@@ -1,6 +1,6 @@
 """A twitter bot that reads direct message hashes and responds with pizza"""
 
-__version__ = "0.5"
+__version__ = "0.6"
 
 import hashlib
 import tempfile
