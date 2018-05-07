@@ -19,8 +19,3 @@ There are two kinds of ingredients:
 * Free (something extra that is usually gratis at a pie shop)
 
 Each category has its own *modifier list*, which is an attribute that might be expected to customize an order
-
-## Future
-* Pizza image generator
-* Put the bot on a server so it's always running.
-* Change format to *premium list* pizza *modifier premium list* etc... as in "Sausage pizza extra sausage". It sounds better.
